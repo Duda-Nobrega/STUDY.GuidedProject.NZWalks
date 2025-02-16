@@ -98,8 +98,35 @@ namespace NZWalksAPI.Controllers
         //Update Region
         //PUT: Https://localhost:portnumber/api/regions/{id}
         [HttpPut]
-        [Route("{id: guid/ }")]
-        public IActionResult UpdateRegion([FromRoute] Guid id, )
+        [Route("{id:guid}")]
+        public IActionResult UpdateRegion([FromRoute] Guid id, [FromBody] UpdateRegionRequestoDto updateRegionRequestoDto )
+        {
+            //check if region exists
+            var regionDomainModel =  dbContext.Regions.Find(id);
+            if (regionDomainModel == null )
+            {
+                return NotFound();
+            }
+            // map dto to Domain Model
+
+            regionDomainModel.Code = updateRegionRequestoDto.Code;
+            regionDomainModel.Name = updateRegionRequestoDto.Name;
+            regionDomainModel.RegionImageUrl = updateRegionRequestoDto.RegionImageUrl;
+
+            dbContext.SaveChanges();
+
+            //convert Domain Model to dto
+            var regionDto = new RegionsDto
+            {
+                Id = regionDomainModel.Id,
+                Name = regionDomainModel.Name,
+                Code = regionDomainModel.Code,
+                RegionImageUrl = regionDomainModel.RegionImageUrl,
+            };
+
+            return Ok(regionDto);
+
+        }
 
 
 
